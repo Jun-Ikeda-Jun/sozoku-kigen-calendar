@@ -1,0 +1,500 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>相続やること期限カレンダー｜死亡日から相続放棄3ヶ月・準確定申告4ヶ月・相続税申告10ヶ月の期限日を自動計算</title>
+<meta name="description" content="亡くなった日を入れるだけ。放棄・準確定申告・相続税申告・名義変更の「あなたの期限日」と残り日数を、その場で一覧にします。登録不要・入力はブラウザの中だけ。 期限17項目と、出典リンク付きの実務ポイント20件を掲載。">
+<style>
+:root{--bg:#f6f5f2;--panel:#fff;--ink:#22201c;--sub:#6b665e;--ac:#2f6b57;--ac2:#1f4a3c;--urg:#c0392b;--soon:#b5731a;--past:#9a958d;--line:#e4e1da}
+@media(prefers-color-scheme:dark){:root{--bg:#14140f;--panel:#1e1e18;--ink:#e6e3da;--sub:#a09a8f;--ac:#5fae90;--ac2:#0f2b22;--urg:#f0776a;--soon:#e0a53a;--past:#75706a;--line:#2e2e26}}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,"Hiragino Sans","Yu Gothic UI",sans-serif;background:var(--bg);color:var(--ink);line-height:1.75;-webkit-text-size-adjust:100%}
+header{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;padding:30px 0 26px}
+.wrap{max-width:840px;margin:0 auto;padding:0 16px}
+h1{margin:0;font-size:23px;line-height:1.45}.tag{opacity:.94;margin-top:8px;font-size:14px}
+.safe{margin-top:12px;font-size:12.5px;background:rgba(255,255,255,.16);display:inline-block;padding:5px 12px;border-radius:20px}
+main{padding:20px 0 50px}
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin:0 0 14px}
+.tool h2{margin:0 0 4px;font-size:17px}.hint{font-size:13px;color:var(--sub);margin:0 0 12px}
+.fields{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+.fld{display:flex;flex-direction:column;gap:4px}.fld label{font-size:12.5px;color:var(--sub);font-weight:600}
+input[type=date],input[type=number]{font:inherit;font-size:15px;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink);max-width:220px}
+.unit{font-size:12px;color:var(--sub)}
+fieldset{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:0 0 12px}
+legend{font-size:12.5px;color:var(--sub);font-weight:600;padding:0 5px}
+.cks{display:flex;gap:6px 16px;flex-wrap:wrap}
+.ck{font-size:13.5px;display:flex;align-items:center;gap:6px;cursor:pointer}
+.ck input{width:17px;height:17px;accent-color:var(--ac)}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+button,.sub{font:inherit;font-size:14px;cursor:pointer;border-radius:9px;padding:10px 18px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+#go{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:700;padding:10px 26px}
+.kiso{margin:16px 0 12px;font-size:14px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 13px}
+.kiso .big{font-size:17px;color:var(--ac)}
+.next{margin:12px 0;background:var(--ac);color:#fff;border-radius:12px;padding:14px 16px}
+.next .nl{font-size:12px;opacity:.85}.next .nt{font-size:17px;font-weight:700;line-height:1.5}
+.next .nd{font-size:13.5px;opacity:.95}.next .nc{font-size:14px;margin-top:4px}.next .nc b{font-size:24px}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:12px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:560px}
+th,td{text-align:left;padding:10px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--sub);font-weight:600;font-size:12px;white-space:nowrap}
+.sm{font-size:12px;color:var(--sub)}
+.dcell{white-space:nowrap}.lcell{white-space:nowrap}
+.wt{font-size:12.5px;margin-top:5px}
+.src{margin-top:6px;font-size:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.src a{color:var(--ac);text-decoration:none;font-weight:600}
+.tagc{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:0 7px;font-size:11.5px;color:var(--sub)}
+.bg{border-radius:6px;padding:1px 8px;font-size:11.5px;font-weight:700;white-space:nowrap;color:#fff;display:inline-block}
+.b-urg{background:var(--urg)}.b-soon{background:var(--soon)}.b-norm{background:var(--ac)}.b-past{background:var(--past)}
+.r-past{opacity:.55}.r-urg>td{background:rgba(192,57,43,.06)}
+.after{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.note2{font-size:12.5px;color:var(--sub);margin:12px 0 0}
+.empty{color:var(--sub);font-size:14px}
+h2.sh{font-size:17px;margin:30px 0 4px}.sh+.hint{margin-bottom:10px}
+.stbl table{font-size:13px}.stbl .sp{white-space:nowrap;font-weight:700;color:var(--ac)}
+.stbl a{color:var(--ac);text-decoration:none}
+.fbs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}
+.fb{font-size:12.5px;padding:6px 13px;border-radius:20px}.fb.on{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:700}
+.sec>h3{font-size:14px;color:var(--sub);margin:18px 0 8px;padding-bottom:5px;border-bottom:1px solid var(--line)}
+.f{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin:8px 0}
+.f h3{margin:0 0 6px;font-size:15px;line-height:1.5}
+.dl{margin:0 0 5px;font-size:13px}.dl b{color:var(--ac)}.dl .st{color:var(--sub);margin-left:8px;font-size:12px}
+.dt{margin:0;font-size:13.5px}
+.ac{margin:7px 0 0;font-size:13px;color:var(--sub);background:var(--bg);border-radius:8px;padding:7px 10px}
+.f .meta{margin-top:9px;font-size:12px;color:var(--sub);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.cat{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:1px 8px}
+.f .meta a{color:var(--ac);text-decoration:none;font-weight:600;margin-left:auto}
+footer{color:var(--sub);font-size:12px;padding:26px 0 40px;border-top:1px solid var(--line);margin-top:30px}
+footer a{color:var(--ac)}
+@media print{
+  header{background:none;color:#000;padding:8px 0;border-bottom:2px solid #000}
+  .fields,fieldset,.btns,.after,.fbs,.next{display:none!important}
+  body{background:#fff;color:#000}.tool{border:none;padding:0}
+  table{min-width:0;font-size:11px}.tw{overflow:visible}
+}
+</style></head><body>
+<header><div class="wrap">
+<h1>🕯 相続やること期限カレンダー</h1>
+<div class="tag">亡くなった日を入れるだけ。放棄・準確定申告・相続税申告・名義変更の「あなたの期限日」と残り日数を、その場で一覧にします。登録不要・入力はブラウザの中だけ。</div>
+<div class="safe">🔒 入力した日付や家族構成はブラウザの中だけで計算され、どこにも送信されません（会員登録・課金なし）</div>
+</div></header>
+<main><div class="wrap">
+
+<section class="tool">
+<h2>亡くなった日を入れる</h2>
+<p class="hint">当てはまるものにチェックを入れると、その人に必要な手続きだけを期限日つきで並べます。</p>
+<div class="fields">
+  <div class="fld"><label for="dd">亡くなった日</label><input type="date" id="dd"></div>
+  <div class="fld"><label for="heirs">法定相続人の人数</label><input type="number" id="heirs" value="2" min="1" max="20" step="1"><span class="unit">基礎控除の計算に使います</span></div>
+  <div class="fld"><label for="assets">遺産の目安（任意）</label><input type="number" id="assets" placeholder="例: 4000" min="0" step="100"><span class="unit">単位: 万円。不動産は固定資産税評価額の概算で可</span></div>
+</div>
+<fieldset><legend>当てはまるもの</legend><div class="cks">
+  <label class="ck"><input type="checkbox" id="c-pension" checked>年金を受給していた</label>
+  <label class="ck"><input type="checkbox" id="c-health" checked>健康保険に入っていた</label>
+  <label class="ck"><input type="checkbox" id="c-care" checked>65歳以上（介護保険証あり）</label>
+  <label class="ck"><input type="checkbox" id="c-junkakutei" checked>確定申告をしていた／事業・不動産収入があった</label>
+  <label class="ck"><input type="checkbox" id="c-insurance" checked>生命保険に入っていた</label>
+  <label class="ck"><input type="checkbox" id="c-realestate" checked>不動産（土地・建物）がある</label>
+  <label class="ck"><input type="checkbox" id="c-will">遺言書がある</label>
+</div></fieldset>
+<div class="btns">
+  <button id="go" type="button">期限カレンダーをつくる</button>
+  <button id="clr" type="button">クリア</button>
+</div>
+<div id="res"></div>
+</section>
+
+<h2 class="sh">期限の一覧（起算日からの期間）</h2>
+<p class="hint">上の計算に使っている17項目です。根拠の条文・官公庁ページへのリンクを付けています。</p>
+<div class="tw stbl"><table><thead><tr><th>期間</th><th>手続き</th><th>根拠・出典</th></tr></thead><tbody>
+<tr>
+  <td class="sp">7日以内</td>
+  <td><b>死亡届・火葬（埋葬）許可申請</b><br><span class="sm">起算: 死亡の事実を知った日／窓口: 市区町村役場</span></td>
+  <td class="sm"><a href="https://laws.e-gov.go.jp/law/322AC0000000224" target="_blank" rel="noopener">戸籍法86条｜e-Gov法令検索（戸籍法） →</a></td>
+</tr><tr>
+  <td class="sp">10日以内</td>
+  <td><b>年金受給権者死亡届の提出</b><br><span class="sm">起算: 死亡日／窓口: 年金事務所・年金相談センター</span></td>
+  <td class="sm"><a href="https://laws.e-gov.go.jp/law/329AC0000000115" target="_blank" rel="noopener">厚生年金保険法98条 / 国民年金法105条｜e-Gov法令検索（厚生年金保険法） →</a></td>
+</tr><tr>
+  <td class="sp">14日以内</td>
+  <td><b>世帯主変更届（住民異動届）</b><br><span class="sm">起算: 死亡日／窓口: 市区町村役場</span></td>
+  <td class="sm"><a href="https://laws.e-gov.go.jp/law/342AC0000000081" target="_blank" rel="noopener">住民基本台帳法25条｜e-Gov法令検索（住民基本台帳法） →</a></td>
+</tr><tr>
+  <td class="sp">14日以内</td>
+  <td><b>健康保険・後期高齢者医療の資格喪失届と保険証の返却</b><br><span class="sm">起算: 死亡日／窓口: 市区町村役場（会社員だった場合は勤務先経由）</span></td>
+  <td class="sm"><a href="https://laws.e-gov.go.jp/law/333AC0000000192" target="_blank" rel="noopener">国民健康保険法・健康保険法｜e-Gov法令検索（国民健康保険法） →</a></td>
+</tr><tr>
+  <td class="sp">14日以内</td>
+  <td><b>介護保険資格喪失届・被保険者証の返却</b><br><span class="sm">起算: 死亡日／窓口: 市区町村役場</span></td>
+  <td class="sm"><a href="https://laws.e-gov.go.jp/law/409AC0000000123" target="_blank" rel="noopener">介護保険法｜e-Gov法令検索（介護保険法） →</a></td>
+</tr><tr>
+  <td class="sp">3ヶ月以内</td>
+  <td><b>相続放棄・限定承認の申述（家庭裁判所）</b><br><span class="sm">起算: 自己のために相続の開始があったことを知った時／窓口: 被相続人の最後の住所地の家庭裁判所</span></td>
+  <td class="sm"><a href="https://www.courts.go.jp/saiban/syurui/syurui_kazi/kazi_06_13/index.html" target="_blank" rel="noopener">民法915条｜裁判所（相続の放棄の申述） →</a></td>
+</tr><tr>
+  <td class="sp">4ヶ月以内</td>
+  <td><b>準確定申告（故人の所得税）と納付</b><br><span class="sm">起算: 相続の開始があったことを知った日の翌日／窓口: 故人の住所地の税務署</span></td>
+  <td class="sm"><a href="https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2022.htm" target="_blank" rel="noopener">所得税法124条・125条｜国税庁 No.2022 →</a></td>
+</tr><tr>
+  <td class="sp">10ヶ月以内</td>
+  <td><b>相続税の申告と納付</b><br><span class="sm">起算: 相続の開始があったことを知った日の翌日／窓口: 故人の住所地の税務署</span></td>
+  <td class="sm"><a href="https://www.nta.go.jp/taxes/shiraberu/taxanswer/sozoku/4205.htm" target="_blank" rel="noopener">相続税法27条｜国税庁 No.4205 →</a></td>
+</tr><tr>
+  <td class="sp">10ヶ月以内</td>
+  <td><b>配偶者の税額軽減・小規模宅地等の特例を使うなら、期限までに遺産分割</b><br><span class="sm">起算: 相続の開始があったことを知った日の翌日／窓口: 相続人間の協議（申告は税務署）</span></td>
+  <td class="sm"><a href="https://www.nta.go.jp/taxes/shiraberu/taxanswer/sozoku/4158.htm" target="_blank" rel="noopener">相続税法19条の2・租税特別措置法69条の4｜国税庁 No.4158 →</a></td>
+</tr><tr>
+  <td class="sp">10ヶ月以内</td>
+  <td><b>分割が間に合わないときは「申告期限後3年以内の分割見込書」を添付</b><br><span class="sm">起算: 相続の開始があったことを知った日の翌日／窓口: 故人の住所地の税務署</span></td>
+  <td class="sm"><a href="https://www.nta.go.jp/taxes/shiraberu/taxanswer/sozoku/4208.htm" target="_blank" rel="noopener">相続税法55条・32条｜国税庁 No.4208 →</a></td>
+</tr><tr>
+  <td class="sp">1年以内</td>
+  <td><b>遺留分侵害額の請求</b><br><span class="sm">起算: 相続の開始および遺留分を侵害する贈与・遺贈を知った時／窓口: 相手方への意思表示（内容証明郵便など）・家庭裁判所</span></td>
+  <td class="sm"><a href="https://laws.e-gov.go.jp/law/129AC0000000089" target="_blank" rel="noopener">民法1048条｜e-Gov法令検索（民法） →</a></td>
+</tr><tr>
+  <td class="sp">2年</td>
+  <td><b>高額療養費の払い戻し請求</b><br><span class="sm">起算: 診療を受けた月の翌月1日（自己負担分を支払った日の翌日）／窓口: 加入していた健康保険の窓口</span></td>
+  <td class="sm"><a href="https://laws.e-gov.go.jp/law/211AC0000000070" target="_blank" rel="noopener">健康保険法193条｜e-Gov法令検索（健康保険法） →</a></td>
+</tr><tr>
+  <td class="sp">2年</td>
+  <td><b>埋葬料・葬祭費の請求</b><br><span class="sm">起算: 死亡日（葬祭費は葬儀を行った日の翌日）／窓口: 加入していた健康保険の窓口</span></td>
+  <td class="sm"><a href="https://laws.e-gov.go.jp/law/211AC0000000070" target="_blank" rel="noopener">健康保険法193条｜e-Gov法令検索（健康保険法） →</a></td>
+</tr><tr>
+  <td class="sp">3年</td>
+  <td><b>生命保険金の請求</b><br><span class="sm">起算: 死亡日／窓口: 契約していた保険会社</span></td>
+  <td class="sm"><a href="https://laws.e-gov.go.jp/law/420AC0000000056" target="_blank" rel="noopener">保険法95条｜e-Gov法令検索（保険法） →</a></td>
+</tr><tr>
+  <td class="sp">3年</td>
+  <td><b>相続登記（不動産の名義変更）の申請</b><br><span class="sm">起算: 所有権を取得したことを知った日／窓口: 不動産の所在地を管轄する法務局</span></td>
+  <td class="sm"><a href="https://www.moj.go.jp/MINJI/minji05_00343.html" target="_blank" rel="noopener">不動産登記法76条の2｜法務省（相続登記の申請義務化） →</a></td>
+</tr><tr>
+  <td class="sp">5年</td>
+  <td><b>遺族年金・未支給年金の請求</b><br><span class="sm">起算: 死亡日（未支給年金は支払日の翌月の初日）／窓口: 年金事務所・市区町村役場</span></td>
+  <td class="sm"><a href="https://laws.e-gov.go.jp/law/334AC0000000141" target="_blank" rel="noopener">国民年金法102条｜e-Gov法令検索（国民年金法） →</a></td>
+</tr><tr>
+  <td class="sp">10年</td>
+  <td><b>遺産分割の話し合い（10年を過ぎると取り分の主張が制限される）</b><br><span class="sm">起算: 死亡日（相続開始の時）／窓口: 相続人間の協議・家庭裁判所の調停</span></td>
+  <td class="sm"><a href="https://laws.e-gov.go.jp/law/129AC0000000089" target="_blank" rel="noopener">民法904条の3｜e-Gov法令検索（民法） →</a></td>
+</tr>
+</tbody></table></div>
+<p class="note2">参考: <a href="https://www.nta.go.jp/taxes/shiraberu/taxanswer/sozoku/4152.htm" target="_blank" rel="noopener">基礎控除・相続税の計算（国税庁 No.4152）</a>｜<a href="https://www.nta.go.jp/taxes/shiraberu/taxanswer/sozoku/4132.htm" target="_blank" rel="noopener">相続人の範囲と法定相続分（国税庁 No.4132）</a>｜<a href="https://www.nta.go.jp/taxes/shiraberu/taxanswer/sozoku/4124.htm" target="_blank" rel="noopener">小規模宅地等の特例（国税庁 No.4124）</a></p>
+
+<h2 class="sh">期限まわりの実務ポイント（20件）</h2>
+<p class="hint">公開されている解説から「期限・起算日・条件」などの事実だけを拾って出典リンクを付けています（2026-07-25時点）。判断は必ず出典と窓口でご確認ください。</p>
+<div class="fbs"><button class="fb on" data-c="" type="button">すべて</button><button class="fb" data-c="期限・スケジュール" type="button">⏳ 期限・スケジュール</button><button class="fb" data-c="相続放棄・限定承認" type="button">⚖️ 相続放棄・限定承認</button><button class="fb" data-c="準確定申告" type="button">🧾 準確定申告</button><button class="fb" data-c="相続税申告" type="button">💴 相続税申告</button><button class="fb" data-c="名義変更・相続登記" type="button">🏠 名義変更・相続登記</button><button class="fb" data-c="遺産分割・遺言" type="button">📜 遺産分割・遺言</button></div>
+<div class="sec" data-c="期限・スケジュール"><h3>⏳ 期限・スケジュール（1）</h3><article class="f" data-cat="期限・スケジュール">
+  <h3>⏳ 死亡届など死亡直後の手続きは7日・14日以内</h3>
+  <p class="dl"><b>7日以内／14日以内</b><span class="st">起算: 被相続人の死亡（相続開始）</span></p>
+  <p class="dt">7日以内は死亡診断書・死体検案書の受取、死亡届の提出、火葬（埋葬）許可申請と許可証受取（国外死亡は3ヶ月以内）。14日以内は世帯主変更届（15歳以上が2人以上残る世帯のみ）、年金受給停止、健康保険・介護保険の資格喪失手続き。</p>
+  <p class="ac"><b>やること</b> 死亡届と火葬許可申請を7日以内、世帯主変更・年金・保険の手続きを14日以内に行う</p>
+  <div class="meta"><span class="cat">期限・スケジュール</span>
+    <a href="https://souzoku.asahi.com/article/12686535" target="_blank" rel="noopener nofollow">出典: souzoku.asahi.com →</a></div>
+</article></div><div class="sec" data-c="相続放棄・限定承認"><h3>⚖️ 相続放棄・限定承認（6）</h3><article class="f" data-cat="相続放棄・限定承認">
+  <h3>⚖️ 相続放棄は3ヶ月以内に家庭裁判所へ申述</h3>
+  <p class="dl"><b>3ヶ月以内</b><span class="st">起算: 相続の開始があったことを知った日</span></p>
+  <p class="dt">被相続人の財産を一切相続しない選択。放棄する相続人が単独で家庭裁判所に申述できる。期間内に手続きしないと単純承認とみなされ、借金などの負債も引き継ぐ。</p>
+  <p class="ac"><b>やること</b> 家庭裁判所に相続放棄の申述をする</p>
+  <div class="meta"><span class="cat">相続放棄・限定承認</span>
+    <a href="https://www.gov-online.go.jp/article/202403/entry-5848.html" target="_blank" rel="noopener nofollow">出典: gov-online.go.jp →</a></div>
+</article><article class="f" data-cat="相続放棄・限定承認">
+  <h3>⚖️ 限定承認は3ヶ月以内に相続人全員で申述</h3>
+  <p class="dl"><b>3ヶ月以内</b><span class="st">起算: 相続の開始があったことを知った日</span></p>
+  <p class="dt">取得したプラスの財産の限度でマイナスの財産を引き継ぐ方法。相続人全員が共同で家庭裁判所に申述する必要がある。</p>
+  <p class="ac"><b>やること</b> 相続人全員で家庭裁判所に限定承認を申述する</p>
+  <div class="meta"><span class="cat">相続放棄・限定承認</span>
+    <a href="https://www.gov-online.go.jp/article/202403/entry-5848.html" target="_blank" rel="noopener nofollow">出典: gov-online.go.jp →</a></div>
+</article><article class="f" data-cat="相続放棄・限定承認">
+  <h3>⚖️ 相続放棄・限定承認は3ヶ月以内に家庭裁判所へ申述</h3>
+  <p class="dl"><b>3ヶ月以内</b><span class="st">起算: 自己のために相続の開始があったことを知った日の翌日</span></p>
+  <p class="dt">熟慮期間と呼ばれる。限定承認は相続人全員の合意が必要。期間内に手続きしても相続財産を勝手に使ったり隠したりすると無効となり単純承認とみなされる。</p>
+  <p class="ac"><b>やること</b> 財産と負債を調査し、放棄・限定承認する場合は家庭裁判所に申述書を提出する</p>
+  <div class="meta"><span class="cat">相続放棄・限定承認</span>
+    <a href="https://souzoku.asahi.com/article/12686535" target="_blank" rel="noopener nofollow">出典: souzoku.asahi.com →</a></div>
+</article><article class="f" data-cat="相続放棄・限定承認">
+  <h3>⚖️ 相続放棄の申述で権利も債務も一切承継しない</h3>
+  
+  <p class="dt">家庭裁判所への申述により、亡くなった人の財産（権利）も借金（義務）も一切受け継がない扱いとする手続。</p>
+  <p class="ac"><b>やること</b> 家庭裁判所に相続放棄の申述をする</p>
+  <div class="meta"><span class="cat">相続放棄・限定承認</span>
+    <a href="https://www.courts.go.jp/saiban/syurui/souzoku/index.html" target="_blank" rel="noopener nofollow">出典: courts.go.jp →</a></div>
+</article><article class="f" data-cat="相続放棄・限定承認">
+  <h3>⚖️ 限定承認は相続財産の範囲内でのみ債務を負う</h3>
+  
+  <p class="dt">相続で得た財産の限度でのみ被相続人の債務を引き継ぐ手続。相続人が家庭裁判所に申述する。</p>
+  <p class="ac"><b>やること</b> 家庭裁判所に限定承認の申述をする</p>
+  <div class="meta"><span class="cat">相続放棄・限定承認</span>
+    <a href="https://www.courts.go.jp/saiban/syurui/souzoku/index.html" target="_blank" rel="noopener nofollow">出典: courts.go.jp →</a></div>
+</article><article class="f" data-cat="相続放棄・限定承認">
+  <h3>⚖️ 承認・放棄の判断期間は伸長を申し立てられる</h3>
+  
+  <p class="dt">相続を承認するか放棄するかを決める期間を延ばすための家庭裁判所の手続がある。</p>
+  <p class="ac"><b>やること</b> 期間内に家庭裁判所へ期間伸長を申し立てる</p>
+  <div class="meta"><span class="cat">相続放棄・限定承認</span>
+    <a href="https://www.courts.go.jp/saiban/syurui/souzoku/index.html" target="_blank" rel="noopener nofollow">出典: courts.go.jp →</a></div>
+</article></div><div class="sec" data-c="準確定申告"><h3>🧾 準確定申告（1）</h3><article class="f" data-cat="準確定申告">
+  <h3>🧾 被相続人の所得税の準確定申告と納税は4ヶ月以内</h3>
+  <p class="dl"><b>4ヶ月以内</b><span class="st">起算: 被相続人の死亡（相続開始）</span></p>
+  <p class="dt">被相続人の生前の所得についての申告。期限までに行わないと無申告加算税や延滞税が課される。</p>
+  <p class="ac"><b>やること</b> 被相続人の生前の所得を集計し、準確定申告と納税を行う</p>
+  <div class="meta"><span class="cat">準確定申告</span>
+    <a href="https://souzoku.asahi.com/article/12686535" target="_blank" rel="noopener nofollow">出典: souzoku.asahi.com →</a></div>
+</article></div><div class="sec" data-c="相続税申告"><h3>💴 相続税申告（1）</h3><article class="f" data-cat="相続税申告">
+  <h3>💴 相続税の申告と納税は10ヶ月以内</h3>
+  <p class="dl"><b>10ヶ月以内</b><span class="st">起算: 被相続人の死亡（相続開始）</span></p>
+  <p class="dt">課税価格の総額が基礎控除額（3000万円＋600万円×法定相続人の数）を超える場合に課税。遅れると無申告加算税や延滞税が発生する。</p>
+  <p class="ac"><b>やること</b> 財産と相続人を確定させ、基礎控除額を超えるか確認して申告・納税する</p>
+  <div class="meta"><span class="cat">相続税申告</span>
+    <a href="https://souzoku.asahi.com/article/12686535" target="_blank" rel="noopener nofollow">出典: souzoku.asahi.com →</a></div>
+</article></div><div class="sec" data-c="名義変更・相続登記"><h3>🏠 名義変更・相続登記（5）</h3><article class="f" data-cat="名義変更・相続登記">
+  <h3>🏠 相続登記の申請は3年以内が法律上の義務</h3>
+  <p class="dl"><b>3年以内</b><span class="st">起算: 不動産を相続（取得）したことを知った日（遺産分割成立時はその成立日）</span></p>
+  <p class="dt">2024年4月1日から義務化。同日より前に相続した未登記の不動産も対象。正当な理由なく怠ると10万円以下の過料の対象。</p>
+  <p class="ac"><b>やること</b> 法務局に相続登記を申請する</p>
+  <div class="meta"><span class="cat">名義変更・相続登記</span>
+    <a href="https://www.gov-online.go.jp/article/202403/entry-5848.html" target="_blank" rel="noopener nofollow">出典: gov-online.go.jp →</a></div>
+</article><article class="f" data-cat="名義変更・相続登記">
+  <h3>🏠 不動産の相続登記は3年以内</h3>
+  <p class="dl"><b>3年以内</b><span class="st">起算: 相続によって不動産を取得したことを知った日</span></p>
+  
+  <p class="ac"><b>やること</b> 取得した不動産の相続登記を申請する</p>
+  <div class="meta"><span class="cat">名義変更・相続登記</span>
+    <a href="https://souzoku.asahi.com/article/12686535" target="_blank" rel="noopener nofollow">出典: souzoku.asahi.com →</a></div>
+</article><article class="f" data-cat="名義変更・相続登記">
+  <h3>🏠 不動産を相続したら相続登記の申請が必要</h3>
+  
+  <p class="dt">相続登記の申請義務化は令和6年4月に開始。申請手続は登記手続ハンドブック（遺産分割協議編・法定相続編・遺贈編）で説明されている。</p>
+  <p class="ac"><b>やること</b> 不動産の所在地を管轄する法務局に相続登記を申請する</p>
+  <div class="meta"><span class="cat">名義変更・相続登記</span>
+    <a href="https://www.moj.go.jp/MINJI/minji05_00435.html" target="_blank" rel="noopener nofollow">出典: moj.go.jp →</a></div>
+</article><article class="f" data-cat="名義変更・相続登記">
+  <h3>🏠 相続登記の登録免許税に免税措置がある</h3>
+  
+  <p class="dt">相続登記の登録免許税について免税措置が設けられている（令和7年4月掲載の案内あり）。計算方法は法務省・法務局の資料で示されている。</p>
+  <p class="ac"><b>やること</b> 免税措置の対象になるか法務局の案内で確認する</p>
+  <div class="meta"><span class="cat">名義変更・相続登記</span>
+    <a href="https://www.moj.go.jp/MINJI/minji05_00435.html" target="_blank" rel="noopener nofollow">出典: moj.go.jp →</a></div>
+</article><article class="f" data-cat="名義変更・相続登記">
+  <h3>🏠 法定相続情報証明制度で戸籍謄本の束を代替できる</h3>
+  
+  <p class="dt">相続関係を記した一覧図と戸籍謄本等を法務局に提出し、登記官が戸籍と適合することを確認すると一覧図の写しが交付される。各種相続手続で戸籍謄本等の代わりに使える。</p>
+  <p class="ac"><b>やること</b> 法務局に一覧図と戸籍謄本等を提出し写しの交付を受ける</p>
+  <div class="meta"><span class="cat">名義変更・相続登記</span>
+    <a href="https://www.moj.go.jp/MINJI/minji05_00435.html" target="_blank" rel="noopener nofollow">出典: moj.go.jp →</a></div>
+</article></div><div class="sec" data-c="遺産分割・遺言"><h3>📜 遺産分割・遺言（6）</h3><article class="f" data-cat="遺産分割・遺言">
+  <h3>📜 遺留分侵害額請求は知った時から1年で時効</h3>
+  <p class="dl"><b>1年以内（相続開始から10年）</b><span class="st">起算: 相続の開始および遺留分を侵害する贈与・遺贈があったことを知った時</span></p>
+  <p class="dt">遺留分割合は配偶者のみ・子のみ・配偶者と子・配偶者と直系尊属で2分の1、直系尊属のみで3分の1。兄弟姉妹に遺留分はない。</p>
+  <p class="ac"><b>やること</b> 贈与・遺贈を受けた者へ侵害額に相当する金銭の支払を請求する</p>
+  <div class="meta"><span class="cat">遺産分割・遺言</span>
+    <a href="https://www.gov-online.go.jp/article/202403/entry-5848.html" target="_blank" rel="noopener nofollow">出典: gov-online.go.jp →</a></div>
+</article><article class="f" data-cat="遺産分割・遺言">
+  <h3>📜 特別寄与料の請求は6ヶ月以内に家裁へ申立て</h3>
+  <p class="dl"><b>6ヶ月以内（相続開始から1年）</b><span class="st">起算: 相続の開始および相続人を知った時</span></p>
+  <p class="dt">相続人以外の親族が無償で療養介護等を行い被相続人の財産の維持・増加に特別の寄与をした場合、相続人へ金銭を請求できる。協議不成立時は家庭裁判所の調停を利用。</p>
+  <p class="ac"><b>やること</b> 相続人と協議し、まとまらなければ家庭裁判所に調停を申し立てる</p>
+  <div class="meta"><span class="cat">遺産分割・遺言</span>
+    <a href="https://www.gov-online.go.jp/article/202403/entry-5848.html" target="_blank" rel="noopener nofollow">出典: gov-online.go.jp →</a></div>
+</article><article class="f" data-cat="遺産分割・遺言">
+  <h3>📜 遺産分割は早期に行うことが求められる</h3>
+  
+  <p class="dt">従来は遺産分割に期間制限がなかったが、令和3年の民法改正で早期の遺産分割を促す新ルールが導入され、令和5年4月1日に開始した。</p>
+  <p class="ac"><b>やること</b> 相続人全員で遺産分割協議を行い、分け方を決める</p>
+  <div class="meta"><span class="cat">遺産分割・遺言</span>
+    <a href="https://www.moj.go.jp/MINJI/minji05_00435.html" target="_blank" rel="noopener nofollow">出典: moj.go.jp →</a></div>
+</article><article class="f" data-cat="遺産分割・遺言">
+  <h3>📜 遺産分割前は相続財産が相続人の共有になる</h3>
+  
+  <p class="dt">相続発生後は原則として法定相続分の割合で相続人が共有し、管理・処分は相続人同士で決める必要がある。時間が経つと数次相続で権利関係が複雑化する。</p>
+  <p class="ac"><b>やること</b> 共有状態を解消するため遺産分割を先送りしない</p>
+  <div class="meta"><span class="cat">遺産分割・遺言</span>
+    <a href="https://www.moj.go.jp/MINJI/minji05_00435.html" target="_blank" rel="noopener nofollow">出典: moj.go.jp →</a></div>
+</article><article class="f" data-cat="遺産分割・遺言">
+  <h3>📜 自筆の遺言書は死亡後に検認手続が必要</h3>
+  
+  <p class="dt">遺言者が自分で書いた遺言書を持っている人が、遺言者の死亡後に家庭裁判所で行わなければならない手続。</p>
+  <p class="ac"><b>やること</b> 家庭裁判所に遺言書の検認を申し立てる</p>
+  <div class="meta"><span class="cat">遺産分割・遺言</span>
+    <a href="https://www.courts.go.jp/saiban/syurui/souzoku/index.html" target="_blank" rel="noopener nofollow">出典: courts.go.jp →</a></div>
+</article><article class="f" data-cat="遺産分割・遺言">
+  <h3>📜 遺留分の請求手続は令和元年7月1日で区分</h3>
+  
+  <p class="dt">令和元年7月1日以降に開始した相続は遺留分侵害額の請求調停、それより前の相続は遺留分減殺による物件返還請求調停による。</p>
+  <p class="ac"><b>やること</b> 相続開始日を確認し該当する調停を家庭裁判所に申し立てる</p>
+  <div class="meta"><span class="cat">遺産分割・遺言</span>
+    <a href="https://www.courts.go.jp/saiban/syurui/souzoku/index.html" target="_blank" rel="noopener nofollow">出典: courts.go.jp →</a></div>
+</article></div>
+
+</div></main>
+<footer><div class="wrap">
+掲載しているのは、条文・官公庁ページに書かれた期限などの事実と、各出典ページに書かれた事実の要点、およびそのリンクのみです（本文の転載はしていません）。<br>
+本サイトは税務・法務の助言ではありません。相続放棄・申告の可否や期限の起算日は個別の事情で変わります。正確な情報は
+<a href="https://www.nta.go.jp/taxes/shiraberu/taxanswer/sozoku/4205.htm" target="_blank" rel="noopener">国税庁 No.4205 相続税の申告と納税</a>、法務省・裁判所・e-Gov法令検索、および税務署・家庭裁判所・市区町村の窓口でご確認ください。<br>
+期限の計算・カレンダー書き出しはすべてブラウザ内で行われ、入力内容の送信・保存は一切しません。
+</div></footer>
+<script>
+var STEPS = [{"key":"shibou","title":"死亡届・火葬（埋葬）許可申請","cond":"always","offset":{"d":7},"base":"死亡の事実を知った日","where":"市区町村役場","what":"死亡診断書を添えて提出する。火葬許可証はこの届出とあわせて受け取る。","law":"戸籍法86条","url":"https://laws.e-gov.go.jp/law/322AC0000000224","source":"e-Gov法令検索（戸籍法）"},{"key":"setainushi","title":"世帯主変更届（住民異動届）","cond":"always","offset":{"d":14},"base":"死亡日","where":"市区町村役場","what":"故人が世帯主で、残る世帯員が2人以上いる場合に必要。残りが1人なら届出は不要とされる。","law":"住民基本台帳法25条","url":"https://laws.e-gov.go.jp/law/342AC0000000081","source":"e-Gov法令検索（住民基本台帳法）"},{"key":"nenkin_shibou","title":"年金受給権者死亡届の提出","cond":"pension","offset":{"d":10},"base":"死亡日","where":"年金事務所・年金相談センター","what":"厚生年金は10日以内、国民年金は14日以内。日本年金機構にマイナンバーが収録されている場合は原則届出不要とされる。あわせて未支給年金の請求も確認する。","law":"厚生年金保険法98条 / 国民年金法105条","url":"https://laws.e-gov.go.jp/law/329AC0000000115","source":"e-Gov法令検索（厚生年金保険法）"},{"key":"kenpo","title":"健康保険・後期高齢者医療の資格喪失届と保険証の返却","cond":"health","offset":{"d":14},"base":"死亡日","where":"市区町村役場（会社員だった場合は勤務先経由）","what":"国民健康保険・後期高齢者医療は14日以内。会社の健康保険は勤務先が5日以内に手続きするのが原則。扶養に入っていた家族は自分の保険への切替が必要になる。","law":"国民健康保険法・健康保険法","url":"https://laws.e-gov.go.jp/law/333AC0000000192","source":"e-Gov法令検索（国民健康保険法）"},{"key":"kaigo","title":"介護保険資格喪失届・被保険者証の返却","cond":"care","offset":{"d":14},"base":"死亡日","where":"市区町村役場","what":"65歳以上（または40〜64歳で要介護認定を受けていた）場合。未納・過納の保険料は相続人が精算する。","law":"介護保険法","url":"https://laws.e-gov.go.jp/law/409AC0000000123","source":"e-Gov法令検索（介護保険法）"},{"key":"hoki","title":"相続放棄・限定承認の申述（家庭裁判所）","cond":"always","offset":{"m":3},"base":"自己のために相続の開始があったことを知った時","where":"被相続人の最後の住所地の家庭裁判所","what":"借金を含めて一切引き継がないのが相続放棄、プラスの財産の範囲でだけ借金を引き継ぐのが限定承認。期間内に家庭裁判所へ期間伸長の申立てをすることもできる。財産を処分すると単純承認とみなされ放棄できなくなる場合がある。","law":"民法915条","url":"https://www.courts.go.jp/saiban/syurui/syurui_kazi/kazi_06_13/index.html","source":"裁判所（相続の放棄の申述）"},{"key":"junkakutei","title":"準確定申告（故人の所得税）と納付","cond":"junkakutei","offset":{"m":4},"base":"相続の開始があったことを知った日の翌日","where":"故人の住所地の税務署","what":"1月1日から死亡日までの所得を相続人が申告する。事業所得・不動産所得があった、給与や年金が一定額を超える、医療費控除や源泉徴収された税の還付を受けたい場合など。","law":"所得税法124条・125条","url":"https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2022.htm","source":"国税庁 No.2022"},{"key":"sozokuzei","title":"相続税の申告と納付","cond":"tax","offset":{"m":10},"base":"相続の開始があったことを知った日の翌日","where":"故人の住所地の税務署","what":"遺産の総額が基礎控除（3,000万円＋600万円×法定相続人の数）を超えるときに申告が必要。納付も同じ期限。","law":"相続税法27条","url":"https://www.nta.go.jp/taxes/shiraberu/taxanswer/sozoku/4205.htm","source":"国税庁 No.4205"},{"key":"haigusha","title":"配偶者の税額軽減・小規模宅地等の特例を使うなら、期限までに遺産分割","cond":"tax","offset":{"m":10},"base":"相続の開始があったことを知った日の翌日","where":"相続人間の協議（申告は税務署）","what":"これらの特例は原則として申告期限までに分割が終わっている財産が対象。分割が間に合わないと、いったん特例なしで納税することになる。","law":"相続税法19条の2・租税特別措置法69条の4","url":"https://www.nta.go.jp/taxes/shiraberu/taxanswer/sozoku/4158.htm","source":"国税庁 No.4158"},{"key":"mibunkatsu","title":"分割が間に合わないときは「申告期限後3年以内の分割見込書」を添付","cond":"tax","offset":{"m":10},"base":"相続の開始があったことを知った日の翌日","where":"故人の住所地の税務署","what":"未分割のまま法定相続分で申告し、この書類を付けておくと、3年以内に分割できた時点で特例を適用した更正の請求ができる。","law":"相続税法55条・32条","url":"https://www.nta.go.jp/taxes/shiraberu/taxanswer/sozoku/4208.htm","source":"国税庁 No.4208"},{"key":"iryubun","title":"遺留分侵害額の請求","cond":"will","offset":{"y":1},"base":"相続の開始および遺留分を侵害する贈与・遺贈を知った時","where":"相手方への意思表示（内容証明郵便など）・家庭裁判所","what":"遺言などで最低限の取り分を下回った場合に、金銭の支払いを請求できる。知らないままでも相続開始から10年で権利は消滅する。","law":"民法1048条","url":"https://laws.e-gov.go.jp/law/129AC0000000089","source":"e-Gov法令検索（民法）"},{"key":"koeki","title":"高額療養費の払い戻し請求","cond":"health","offset":{"y":2},"base":"診療を受けた月の翌月1日（自己負担分を支払った日の翌日）","where":"加入していた健康保険の窓口","what":"入院などで自己負担が上限を超えていた分を、相続人が請求できる。時効は2年。","law":"健康保険法193条","url":"https://laws.e-gov.go.jp/law/211AC0000000070","source":"e-Gov法令検索（健康保険法）"},{"key":"maisou","title":"埋葬料・葬祭費の請求","cond":"health","offset":{"y":2},"base":"死亡日（葬祭費は葬儀を行った日の翌日）","where":"加入していた健康保険の窓口","what":"健康保険からの埋葬料、国民健康保険・後期高齢者医療からの葬祭費。金額は保険者により異なる。時効は2年。","law":"健康保険法193条","url":"https://laws.e-gov.go.jp/law/211AC0000000070","source":"e-Gov法令検索（健康保険法）"},{"key":"seiho","title":"生命保険金の請求","cond":"insurance","offset":{"y":3},"base":"死亡日","where":"契約していた保険会社","what":"保険給付を請求する権利の消滅時効は3年。受取人が指定されていれば遺産分割の対象外だが、相続税では「みなし相続財産」として計算に入る（500万円×法定相続人の数の非課税枠がある）。","law":"保険法95条","url":"https://laws.e-gov.go.jp/law/420AC0000000056","source":"e-Gov法令検索（保険法）"},{"key":"izoku_nenkin","title":"遺族年金・未支給年金の請求","cond":"pension","offset":{"y":5},"base":"死亡日（未支給年金は支払日の翌月の初日）","where":"年金事務所・市区町村役場","what":"遺族基礎年金・遺族厚生年金、および故人が受け取るはずだった未支給年金。年金給付を受ける権利の時効は5年。","law":"国民年金法102条","url":"https://laws.e-gov.go.jp/law/334AC0000000141","source":"e-Gov法令検索（国民年金法）"},{"key":"touki","title":"相続登記（不動産の名義変更）の申請","cond":"realestate","offset":{"y":3},"base":"所有権を取得したことを知った日","where":"不動産の所在地を管轄する法務局","what":"2024年4月1日から義務化。正当な理由なく怠ると10万円以下の過料の対象。分割が長引く場合は「相続人申告登記」で義務を果たすことができる。","law":"不動産登記法76条の2","url":"https://www.moj.go.jp/MINJI/minji05_00343.html","source":"法務省（相続登記の申請義務化）"},{"key":"bunkatsu10","title":"遺産分割の話し合い（10年を過ぎると取り分の主張が制限される）","cond":"always","offset":{"y":10},"base":"死亡日（相続開始の時）","where":"相続人間の協議・家庭裁判所の調停","what":"遺産分割そのものに期限はないが、相続開始から10年を過ぎると、原則として特別受益・寄与分を主張できなくなり法定相続分で分けることになる。","law":"民法904条の3","url":"https://laws.e-gov.go.jp/law/129AC0000000089","source":"e-Gov法令検索（民法）"}];
+var COND_LABEL = {"always":"全員","pension":"年金","health":"健康保険","care":"介護保険","junkakutei":"準確定申告","tax":"相続税","insurance":"生命保険","realestate":"不動産","will":"遺言書"};
+
+function $(id){ return document.getElementById(id); }
+function escq(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function pad(n){ return (n<10?'0':'')+n; }
+function ymd(d){ return d.getUTCFullYear()+'-'+pad(d.getUTCMonth()+1)+'-'+pad(d.getUTCDate()); }
+function compact(d){ return ''+d.getUTCFullYear()+pad(d.getUTCMonth()+1)+pad(d.getUTCDate()); }
+var WD = ['日','月','火','水','木','金','土'];
+function jp(d){ return (d.getUTCMonth()+1)+'月'+d.getUTCDate()+'日('+WD[d.getUTCDay()]+')'; }
+
+function parseYMD(s){
+  var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s||'').trim());
+  if(!m) return null;
+  var d=new Date(Date.UTC(+m[1],+m[2]-1,+m[3]));
+  if(d.getUTCFullYear()!==+m[1]||d.getUTCMonth()!==+m[2]-1||d.getUTCDate()!==+m[3]) return null;
+  return d;
+}
+function addDays(d,n){ return new Date(d.getTime()+n*86400000); }
+// 月・年で定めた期間は応当日で満了。応当日が無い月（1/31の1ヶ月後など）は民法143条2項ただし書のとおり月末にする
+function addMonths(d,n){
+  var y=d.getUTCFullYear(), m=d.getUTCMonth()+n, day=d.getUTCDate();
+  var last=new Date(Date.UTC(y,m+1,0)).getUTCDate();
+  return new Date(Date.UTC(y,m,Math.min(day,last)));
+}
+function deadlineOf(base,o){
+  if(o.d) return addDays(base,o.d);
+  if(o.m) return addMonths(base,o.m);
+  return addMonths(base,o.y*12);
+}
+function todayUTC(){ var n=new Date(); return new Date(Date.UTC(n.getFullYear(),n.getMonth(),n.getDate())); }
+
+function conds(){
+  var c={always:true}, ids=['pension','health','care','junkakutei','insurance','realestate','will'];
+  for(var i=0;i<ids.length;i++){ var el=$('c-'+ids[i]); c[ids[i]] = !!(el&&el.checked); }
+  return c;
+}
+function heirs(){ var n=parseInt($('heirs').value,10); return (isNaN(n)||n<1)?1:Math.min(n,20); }
+function kisoMan(){ return 3000 + 600*heirs(); }          // 基礎控除（万円）
+function assetsMan(){ var v=$('assets').value.replace(/[,，\s]/g,''); if(v==='') return null; var n=parseFloat(v); return isNaN(n)?null:n; }
+function man(n){ return n.toLocaleString('ja-JP')+'万円'; }
+
+var LAST = null; // 生成結果（ICS書き出し用）
+
+function build(){
+  var base=parseYMD($('dd').value);
+  if(!base){ $('res').innerHTML='<p class="empty">亡くなった日を入力してください。</p>'; LAST=null; return; }
+  var c=conds(), a=assetsMan(), k=kisoMan(), taxLikely=(a===null)||(a>=k);
+  var t=todayUTC(), list=[], i;
+
+  for(i=0;i<STEPS.length;i++){
+    var s=STEPS[i];
+    if(s.cond==='tax'){ if(!taxLikely) continue; }
+    else if(!c[s.cond]) continue;
+    var due=deadlineOf(base,s.offset);
+    list.push({s:s, due:due, left:Math.round((due.getTime()-t.getTime())/86400000)});
+  }
+  list.sort(function(x,y){ return x.due-y.due || (x.s.offset.d?0:1)-(y.s.offset.d?0:1); });
+
+  var h='';
+  // 基礎控除の目安
+  h+='<div class="kiso"><b>相続税の基礎控除の目安</b>：3,000万円 ＋ 600万円 × '+heirs()+'人 ＝ <b class="big">'+man(k)+'</b><br>';
+  if(a===null){ h+='<span class="sm">遺産の目安を入れると、申告が必要になりそうかの当たりが付きます。未入力のため、相続税の項目も表示しています。</span>'; }
+  else if(a>=k){ h+='<span class="sm">入力された遺産の目安 '+man(a)+' は基礎控除を<b>超えています</b>。相続税の申告が必要になる可能性があります（生命保険の非課税枠・小規模宅地等の特例などで変わります）。</span>'; }
+  else { h+='<span class="sm">入力された遺産の目安 '+man(a)+' は基礎控除の範囲内です。この場合は相続税の申告が不要なことが多いため、下の一覧から相続税の項目を外しています（特例を使って0円にする場合は申告が必要です）。</span>'; }
+  h+='</div>';
+
+  // 直近の期限をサマリで大きく出す
+  var next=null;
+  for(i=0;i<list.length;i++){ if(list[i].left>=0){ next=list[i]; break; } }
+  if(next){
+    h+='<div class="next"><div class="nl">つぎの期限</div><div class="nt">'+escq(next.s.title)+'</div>'+
+       '<div class="nd">'+ymd(next.due)+' '+jp(next.due)+'</div>'+
+       '<div class="nc">あと <b>'+next.left+'</b> 日</div></div>';
+  }
+
+  h+='<div class="tw"><table class="tl"><thead><tr><th>期限日</th><th>残り</th><th>やること</th></tr></thead><tbody>';
+  for(i=0;i<list.length;i++){
+    var it=list[i], cls = it.left<0 ? 'past' : it.left<=14 ? 'urg' : it.left<=60 ? 'soon' : 'norm';
+    var leftTxt = it.left<0 ? '期限経過' : 'あと'+it.left+'日';
+    h+='<tr class="r-'+cls+'"><td class="dcell"><b>'+ymd(it.due)+'</b><br><span class="sm">'+jp(it.due)+'</span></td>'+
+       '<td class="lcell"><span class="bg b-'+cls+'">'+leftTxt+'</span><br><span class="sm">'+escq(spanOf(it.s.offset))+'</span></td>'+
+       '<td><b>'+escq(it.s.title)+'</b>'+
+       '<div class="sm">窓口: '+escq(it.s.where)+'／起算: '+escq(it.s.base)+'</div>'+
+       '<div class="wt">'+escq(it.s.what)+'</div>'+
+       '<div class="src"><span class="tagc">'+escq(COND_LABEL[it.s.cond]||'')+'</span>'+
+       '<a href="'+escq(it.s.url)+'" target="_blank" rel="noopener">'+escq(it.s.law)+'｜'+escq(it.s.source)+' →</a></div></td></tr>';
+  }
+  h+='</tbody></table></div>';
+  h+='<div class="after">'+
+     '<button id="ics" type="button" class="sub">カレンダーに登録（.ics を保存・'+list.length+'件）</button>'+
+     '<button id="txt" type="button" class="sub">一覧をテキストでコピー</button>'+
+     '<button id="prt" type="button" class="sub">印刷する</button></div>'+
+     '<p class="note2">※ 起算日は「亡くなった日」で計算しています。相続放棄（3ヶ月）や申告（4ヶ月・10ヶ月）は法律上'+
+     '<b>「相続の開始があったことを知った日」</b>が起算日なので、亡くなったことを後から知った場合は期限が後ろにずれます。'+
+     '期限日が土日祝にあたる場合、申告・納付などは翌開庁日になる取扱いがあります。正確な期限は必ず出典と窓口でご確認ください。</p>';
+
+  $('res').innerHTML=h;
+  LAST={list:list, base:base};
+  $('ics').onclick=downloadICS; $('txt').onclick=copyText; $('prt').onclick=function(){ window.print(); };
+}
+function spanOf(o){ return o.d ? (o.d+'日以内') : o.m ? (o.m+'ヶ月以内') : (o.y===1 ? '1年以内' : (o.y+'年')); }
+
+// ── カレンダー書き出し（.ics）。ファイルはブラウザ内で組み立てて保存するだけで、どこにも送信しない
+function icsEsc(s){ return String(s).replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\r?\n/g,'\\n'); }
+function downloadICS(){
+  if(!LAST) return;
+  var now=new Date();
+  var stamp=''+now.getUTCFullYear()+pad(now.getUTCMonth()+1)+pad(now.getUTCDate())+'T'+
+            pad(now.getUTCHours())+pad(now.getUTCMinutes())+pad(now.getUTCSeconds())+'Z';
+  var L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//souzoku-deadline-calendar//JP','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
+  for(var i=0;i<LAST.list.length;i++){
+    var it=LAST.list[i];
+    L.push('BEGIN:VEVENT');
+    L.push('UID:'+it.s.key+'-'+compact(it.due)+'@souzoku-deadline');
+    L.push('DTSTAMP:'+stamp);
+    L.push('DTSTART;VALUE=DATE:'+compact(it.due));
+    L.push('DTEND;VALUE=DATE:'+compact(addDays(it.due,1)));
+    L.push('SUMMARY:'+icsEsc('【相続の期限】'+it.s.title));
+    L.push('DESCRIPTION:'+icsEsc(spanOf(it.s.offset)+'／起算: '+it.s.base+'／窓口: '+it.s.where+'\n'+it.s.what+'\n根拠: '+it.s.law+' '+it.s.url));
+    L.push('BEGIN:VALARM','TRIGGER:-P7D','ACTION:DISPLAY','DESCRIPTION:'+icsEsc('1週間後が期限: '+it.s.title),'END:VALARM');
+    L.push('END:VEVENT');
+  }
+  L.push('END:VCALENDAR');
+  var blob=new Blob([L.join('\r\n')+'\r\n'],{type:'text/calendar;charset=utf-8'});
+  var url=URL.createObjectURL(blob), a=document.createElement('a');
+  a.href=url; a.download='souzoku-deadlines-'+ymd(LAST.base)+'.ics';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(url); },1000);
+  flash($('ics'),'保存しました');
+}
+function copyText(){
+  if(!LAST) return;
+  var out=['相続の期限カレンダー（起算日 '+ymd(LAST.base)+'）'];
+  for(var i=0;i<LAST.list.length;i++){
+    var it=LAST.list[i];
+    out.push(ymd(it.due)+'  '+(it.left<0?'期限経過':'あと'+it.left+'日')+'  '+it.s.title+'（'+spanOf(it.s.offset)+'／'+it.s.where+'）');
+  }
+  copy(out.join('\n'), $('txt'));
+}
+function flash(btn,msg){ var o=btn.textContent; btn.textContent=msg; setTimeout(function(){btn.textContent=o;},1600); }
+function copy(txt,btn){
+  var done=function(){ flash(btn,'コピーしました'); };
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done,function(){ fallback(txt,done); }); }
+  else fallback(txt,done);
+}
+function fallback(txt,done){
+  var ta=document.createElement('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); done(); }catch(e){} document.body.removeChild(ta);
+}
+
+$('go').onclick=build;
+$('dd').onchange=function(){ if($('dd').value) build(); };
+$('clr').onclick=function(){ $('dd').value=''; $('assets').value=''; $('res').innerHTML=''; LAST=null; };
+
+// 実務ポイントのカテゴリ絞り込み
+var fb=document.querySelectorAll('.fb');
+for(var k=0;k<fb.length;k++){ fb[k].onclick=function(){
+  var c=this.getAttribute('data-c'), i;
+  for(i=0;i<fb.length;i++) fb[i].className='fb'+(fb[i]===this?' on':'');
+  var cards=document.querySelectorAll('.f');
+  for(i=0;i<cards.length;i++) cards[i].style.display=(c===''||cards[i].getAttribute('data-cat')===c)?'':'none';
+  var secs=document.querySelectorAll('.sec');
+  for(i=0;i<secs.length;i++) secs[i].style.display=(c===''||secs[i].getAttribute('data-c')===c)?'':'none';
+};}
+</script>
+
+<script data-goatcounter="https://junikeda.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body></html>
